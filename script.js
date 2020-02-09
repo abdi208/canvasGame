@@ -5,6 +5,26 @@ let frames = 0
 var sprite = new Image()
 sprite.src = "img/sprite.png"
 
+//control game 
+const state = {
+    current : 0,
+    getReady : 0,
+    game :1, 
+    gameOver : 2
+}
+document.addEventListener('click', function(e){
+    switch(state.current) {
+        case state.getReady:
+            state.current = state.game;
+            break;
+        case state.game:
+            bird.flap();
+            break;
+        case state.gameOver:
+            state.current = state.getReady
+            break;
+    }
+})
 const bg = {
     sx:0,
     sy:0,
@@ -50,6 +70,16 @@ const bird = {
         let bird = this.animation[this.frame]
         canvasContext.drawImage(sprite, bird.sX, bird.sY, this.w, this.h , this.x - this.w/2, this.y - this.y/2 , this.w, this.h)
 
+    },
+    update : function() {
+        this.period = state.current == state.getReady ? 10 : 5
+
+        this.frame += frames%this.period == 0 ? 1 : 0
+
+        this.frame = this.frame%this.animation.length;
+    },
+    flap : function() {
+
     }
 }
 
@@ -62,7 +92,10 @@ const getReady = {
     y: 60,
 
     draw : function() {
-        canvasContext.drawImage(sprite, this.sx, this.sy, this.w, this.h , this.x, this.y, this.w, this.h)
+        if(state.current === state.getReady) {
+            canvasContext.drawImage(sprite, this.sx, this.sy, this.w, this.h , this.x, this.y, this.w, this.h)
+
+        }
 
     }
 }
@@ -75,7 +108,10 @@ const gameOver = {
     y: 90,
 
     draw : function() {
-        canvasContext.drawImage(sprite, this.sx, this.sy, this.w, this.h , this.x, this.y, this.w, this.h)
+        if(state.current === state.gameOver) {
+            canvasContext.drawImage(sprite, this.sx, this.sy, this.w, this.h , this.x, this.y, this.w, this.h)
+
+        }
 
     }
 }
@@ -92,7 +128,7 @@ function draw() {
     gameOver.draw()
 }
 function update() {
-
+    bird.update()
 }
 function loop() {
     update()
